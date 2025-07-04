@@ -1,0 +1,154 @@
+/*=================================================================
+  About us section
+==================================================================*/
+.about {
+  .block {
+    background: #242930;
+    padding: 25px;
+    border-bottom: 2px solid transparent;
+    transition: .5s all;
+    margin-bottom: 10px;
+
+    &:hover {
+      border-bottom: 2px solid $primary-color;
+    }
+
+    &:hover .icon-box {
+      transform: translateY(-10px);
+    }
+
+    .icon-box {
+      position: relative;
+      width: 160px;
+      height: 92.38px;
+      background-color: transparent;
+      margin: 46.19px auto 60px;
+      // padding: 20px 0;
+      border-left: 2px solid $border-color;
+      border-right: 2px solid $border-color;
+      font-size: 50px;
+      transform: translateZ(0px);
+      transition-duration: 0.3s;
+      transition-property: transform;
+
+      &:after,
+      &:before {
+        content: "";
+        position: absolute;
+        z-index: 1;
+        width: 113.14px;
+        height: 113.14px;
+        background-color: inherit;
+        left: 20.4315px;
+        transform: scaleY(0.5774) rotate(-45deg);
+      }
+
+      &:before {
+        top: -56.5685px;
+        border-top: 2px solid rgba(236, 239, 241, 0.07);
+        border-right: 2px solid rgba(236, 239, 241, 0.07);
+      }
+
+      &:after {
+        bottom: -56.5685px;
+        border-bottom: 2px solid rgba(236, 239, 241, 0.07);
+        border-left: 2px solid rgba(236, 239, 241, 0.07);
+      }
+
+      h3 {
+        color: #afbac4;
+      }
+
+      .custom-icon {
+        max-width: 40%;
+        height: auto;
+        position: relative;
+        z-index: 2;
+        margin-top: 10px;
+      }
+    }
+
+  }
+
+}
+
+@media (min-width: 992px) {
+  .col-lg-1-5 {
+    flex: 0 0 20%;
+    max-width: 20%;
+    padding-left: 3px;
+    padding-right: 3px;
+  }
+}
+
+
+/*=================================================================
+  About us 2 section
+==================================================================*/
+.about-2 {
+  .content-block {
+    padding: 35px 40px;
+    @include tablet {
+      padding: 40px 15px;
+    }
+
+    .media {
+      .pull-left {
+        padding-right: 15px;
+      }
+
+      margin-top:25px;
+
+      i {
+        font-size: 30px;
+        color: $primary-color;
+      }
+
+      h4 {
+        font-size: 16px;
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+.about-2 .content-block {
+  ol {
+    list-style-type: decimal !important; 
+    margin-bottom: 20px;
+    counter-reset: item;
+    margin-left: 25px;
+    
+    > li {
+      display: block;
+      margin-bottom: 15px;
+      position: relative;
+      margin-left: 25px;
+      
+      &:before {
+        content: counter(item) ".";
+        counter-increment: item;
+        position: absolute;
+        left: -25px;
+        font-weight: bold;
+      }
+      
+      p {
+        margin-bottom: 10px;
+      }
+    }
+  }
+  
+  ul {
+    list-style-type: disc !important;
+    padding-left: 35px !important;
+    margin-bottom: 15px;
+    margin-top: 10px;
+    
+    li {
+      position: relative;
+      padding-left: 5px;
+      margin-bottom: 8px;
+    }
+  }
+}
