@@ -112,6 +112,23 @@
   }
 }
 
+div[lang="en"] {
+  font-size: 1.15rem; // Increase font size by 15%
+  
+  h2, h3, h4, h5, h6 {
+    font-size: 1.15em;
+  }
+  
+  .title h2 {
+    font-size: 32px;
+  }
+}
+
+
+div[lang="zh"] {
+  font-size: 1rem;
+}
+
 .about-2 .content-block {
   ol {
     list-style-type: decimal !important; 
