@@ -172,6 +172,8 @@ gulp.task(
     "js:build",
     "scss:build",
     "images:build",
-    "plugins:build"
+    "plugins:build",
+    // Ensure root-level assets like favicon, php, etc. are copied on build
+    "others:build"
   )
 );

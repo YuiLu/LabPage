@@ -745,11 +745,11 @@ a:hover {
     padding: 40px 15px;
   }
 }
-.about-2 .content-block .media {
-  margin-top: 25px;
-}
 .about-2 .content-block .media .pull-left {
   padding-right: 15px;
+}
+.about-2 .content-block .media {
+  margin-top: 25px;
 }
 .about-2 .content-block .media i {
   font-size: 30px;
