@@ -760,6 +760,20 @@ a:hover {
   font-weight: 600;
 }
 
+div[lang=en] {
+  font-size: 1.15rem;
+}
+div[lang=en] h2, div[lang=en] h3, div[lang=en] h4, div[lang=en] h5, div[lang=en] h6 {
+  font-size: 1.15em;
+}
+div[lang=en] .title h2 {
+  font-size: 32px;
+}
+
+div[lang=zh] {
+  font-size: 1rem;
+}
+
 .about-2 .content-block ol {
   list-style-type: decimal !important;
   margin-bottom: 20px;
@@ -1286,7 +1300,7 @@ a:hover {
   margin: 0 0 5px;
 }
 .member-meta span {
-  font-size: 14px;
+  font-size: 16px;
 }
 
 /*=================================================================
