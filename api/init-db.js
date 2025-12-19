@@ -1,27 +1,22 @@
-import { sql } from '@vercel/postgres';
+const { sql } = require('@vercel/postgres');
 
-export const config = {
-  runtime: 'edge',
-};
+// CORS headers helper
+function setCorsHeaders(res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+}
 
-// CORS headers
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
-};
+module.exports = async function handler(req, res) {
+  setCorsHeaders(res);
 
-export default async function handler(request) {
   // Handle CORS preflight
-  if (request.method === 'OPTIONS') {
-    return new Response(null, { status: 200, headers: corsHeaders });
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
   }
 
-  if (request.method !== 'POST') {
-    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
-      status: 405,
-      headers: { 'Content-Type': 'application/json', ...corsHeaders },
-    });
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
@@ -48,22 +43,16 @@ export default async function handler(request) {
     await sql`CREATE INDEX IF NOT EXISTS idx_team_members_approved ON team_members(is_approved)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_team_members_order ON team_members(display_order)`;
 
-    return new Response(JSON.stringify({ 
+    return res.status(200).json({ 
       success: true, 
       message: 'Database initialized successfully' 
-    }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json', ...corsHeaders },
     });
 
   } catch (error) {
     console.error('Database initialization error:', error);
-    return new Response(JSON.stringify({ 
+    return res.status(500).json({ 
       success: false, 
       error: 'Failed to initialize database: ' + error.message 
-    }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json', ...corsHeaders },
     });
   }
-}
+};

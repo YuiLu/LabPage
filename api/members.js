@@ -1,24 +1,22 @@
-import { sql } from '@vercel/postgres';
+const { sql } = require('@vercel/postgres');
 
-export const config = {
-  runtime: 'edge',
-};
+// CORS headers helper
+function setCorsHeaders(res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+}
 
-// CORS headers
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
-};
+module.exports = async function handler(req, res) {
+  setCorsHeaders(res);
 
-export default async function handler(request) {
   // Handle CORS preflight
-  if (request.method === 'OPTIONS') {
-    return new Response(null, { status: 200, headers: corsHeaders });
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
   }
 
   try {
-    if (request.method === 'GET') {
+    if (req.method === 'GET') {
       // Get all approved team members
       const { rows } = await sql`
         SELECT id, name, name_cn, role, category, photo_url, website, social_links, display_order
@@ -27,37 +25,27 @@ export default async function handler(request) {
         ORDER BY display_order ASC, created_at ASC
       `;
       
-      return new Response(JSON.stringify({ success: true, members: rows }), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json', ...corsHeaders },
-      });
+      return res.status(200).json({ success: true, members: rows });
     }
 
-    if (request.method === 'POST') {
+    if (req.method === 'POST') {
       // Register a new team member
-      const body = await request.json();
-      const { name, name_cn, role, category, photo_url, website, social_links } = body;
+      const { name, name_cn, role, category, photo_url, website, social_links } = req.body;
 
       // Validate required fields
       if (!name || !role || !category) {
-        return new Response(JSON.stringify({ 
+        return res.status(400).json({ 
           success: false, 
           error: 'Name, role, and category are required' 
-        }), {
-          status: 400,
-          headers: { 'Content-Type': 'application/json', ...corsHeaders },
         });
       }
 
       // Validate category
       const validCategories = ['faculty', 'postgraduate', 'undergraduate', 'ra', 'alumni'];
       if (!validCategories.includes(category)) {
-        return new Response(JSON.stringify({ 
+        return res.status(400).json({ 
           success: false, 
           error: 'Invalid category. Must be one of: ' + validCategories.join(', ') 
-        }), {
-          status: 400,
-          headers: { 'Content-Type': 'application/json', ...corsHeaders },
         });
       }
 
@@ -70,29 +58,20 @@ export default async function handler(request) {
         RETURNING id
       `;
 
-      return new Response(JSON.stringify({ 
+      return res.status(201).json({ 
         success: true, 
         message: 'Registration submitted successfully. Awaiting approval.',
         id: result.rows[0].id
-      }), {
-        status: 201,
-        headers: { 'Content-Type': 'application/json', ...corsHeaders },
       });
     }
 
-    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
-      status: 405,
-      headers: { 'Content-Type': 'application/json', ...corsHeaders },
-    });
+    return res.status(405).json({ error: 'Method not allowed' });
 
   } catch (error) {
     console.error('Database error:', error);
-    return new Response(JSON.stringify({ 
+    return res.status(500).json({ 
       success: false, 
-      error: 'Internal server error' 
-    }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json', ...corsHeaders },
+      error: 'Internal server error: ' + error.message 
     });
   }
-}
+};
