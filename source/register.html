@@ -1,0 +1,433 @@
+@@include('header.htm')
+
+<!-- 
+Fixed Navigation
+==================================== -->
+<header id="navigation" class="navigation">
+  <div class="container">
+    <div class="navbar-header w-100">
+      <nav class="navbar navbar-expand-lg navbar-dark px-0">
+        <!-- logo -->
+        <a class="navbar-brand logo" href="index.html">
+          <img src="images/logos/logo_white_small.png" alt="Website Logo" />
+        </a>
+        <!-- /logo -->
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar01"
+          aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbar01">
+          <ul class="navbar-nav navigation-menu ml-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html#home">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="index.html#about">About</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="index.html#news">News</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="Recruit.pdf" target="_blank">Recruit</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="index.html#Publication">Publications</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="index.html#People">People</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link btn btn-primary text-white px-3 ml-2" href="register.html">Register</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+  </div>
+</header>
+<!--
+End Fixed Navigation
+==================================== -->
+
+<section class="section" style="padding-top: 120px;">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+        <!-- section title -->
+        <div class="title text-center wow fadeInUp" data-wow-duration="500ms">
+          <h2>Team Member <span class="color">Registration</span></h2>
+          <div class="border"></div>
+          <p class="mt-3">Register to join the MAGIC Lab team. Your information will be reviewed before being displayed on the website.</p>
+        </div>
+        <!-- /section title -->
+      </div>
+    </div>
+
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="card shadow-sm" style="border: none; border-radius: 10px;">
+          <div class="card-body p-5">
+            <form id="registerForm" enctype="multipart/form-data">
+              <!-- Photo Upload -->
+              <div class="form-group text-center mb-4">
+                <div class="photo-upload-container">
+                  <div id="photoPreview" class="photo-preview mb-3">
+                    <img id="previewImg" src="images/team/default-avatar.png" alt="Photo Preview" class="img-fluid rounded" style="width: 150px; height: 150px; object-fit: cover; border: 3px solid #e9ecef;">
+                  </div>
+                  <label for="photoInput" class="btn btn-outline-primary btn-sm">
+                    <i class="tf-ion-upload"></i> Upload Photo
+                  </label>
+                  <input type="file" id="photoInput" name="photo" accept="image/*" class="d-none">
+                  <small class="form-text text-muted d-block">Supported formats: JPG, PNG, GIF, WebP (Max 5MB)</small>
+                </div>
+              </div>
+
+              <!-- Name -->
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="name">Name (English) <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="name" name="name" required placeholder="e.g., John Doe">
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="nameCn">Name (Chinese)</label>
+                    <input type="text" class="form-control" id="nameCn" name="name_cn" placeholder="e.g., 张三">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Category & Role -->
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="category">Category <span class="text-danger">*</span></label>
+                    <select class="form-control" id="category" name="category" required>
+                      <option value="">Select Category</option>
+                      <option value="postgraduate">Master Student</option>
+                      <option value="undergraduate">Undergraduate Internship</option>
+                      <option value="ra">Research Assistant</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="role">Role/Title <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="role" name="role" required placeholder="e.g., Master Student">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Website -->
+              <div class="form-group">
+                <label for="website">Personal Website</label>
+                <input type="url" class="form-control" id="website" name="website" placeholder="https://example.com">
+              </div>
+
+              <!-- Social Links -->
+              <div class="form-group">
+                <label>Social Links</label>
+                <div id="socialLinksContainer">
+                  <div class="social-link-row row mb-2">
+                    <div class="col-md-4">
+                      <select class="form-control social-platform" name="social_platform[]">
+                        <option value="">Select Platform</option>
+                        <option value="personal">Personal Website</option>
+                        <option value="github">GitHub</option>
+                        <option value="linkedin">LinkedIn</option>
+                        <option value="twitter">Twitter</option>
+                        <option value="bilibili">Bilibili</option>
+                        <option value="zhihu">Zhihu</option>
+                        <option value="xiaohongshu">Xiaohongshu</option>
+                      </select>
+                    </div>
+                    <div class="col-md-7">
+                      <input type="url" class="form-control social-url" name="social_url[]" placeholder="https://...">
+                    </div>
+                    <div class="col-md-1 d-flex align-items-center">
+                      <button type="button" class="btn btn-sm btn-outline-danger remove-social-btn" style="display: none;">&times;</button>
+                    </div>
+                  </div>
+                </div>
+                <button type="button" id="addSocialLink" class="btn btn-outline-secondary btn-sm mt-2">
+                  <i class="tf-ion-plus"></i> Add Another Link
+                </button>
+              </div>
+
+              <!-- Submit Button -->
+              <div class="form-group text-center mt-4">
+                <button type="submit" class="btn btn-primary btn-lg px-5" id="submitBtn">
+                  <span id="submitText">Submit Registration</span>
+                  <span id="submitSpinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
+                </button>
+              </div>
+
+              <!-- Alert Messages -->
+              <div id="alertContainer" class="mt-3"></div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Registration specific styles -->
+<style>
+.photo-preview {
+  display: inline-block;
+}
+
+.photo-preview img {
+  transition: all 0.3s ease;
+}
+
+.photo-preview img:hover {
+  border-color: #007bff !important;
+}
+
+.card {
+  background: #fff;
+}
+
+.form-control:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.social-link-row {
+  transition: all 0.3s ease;
+}
+
+.remove-social-btn {
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  line-height: 26px;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+  border-color: #0056b3;
+}
+
+.alert {
+  border-radius: 8px;
+}
+
+@media (max-width: 768px) {
+  .card-body {
+    padding: 20px !important;
+  }
+}
+</style>
+
+<!-- Registration JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('registerForm');
+  const photoInput = document.getElementById('photoInput');
+  const previewImg = document.getElementById('previewImg');
+  const addSocialLinkBtn = document.getElementById('addSocialLink');
+  const socialLinksContainer = document.getElementById('socialLinksContainer');
+  const submitBtn = document.getElementById('submitBtn');
+  const submitText = document.getElementById('submitText');
+  const submitSpinner = document.getElementById('submitSpinner');
+  const alertContainer = document.getElementById('alertContainer');
+
+  let uploadedPhotoUrl = null;
+
+  // Photo preview
+  photoInput.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        showAlert('File too large. Maximum size is 5MB.', 'danger');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        previewImg.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // Add social link row
+  addSocialLinkBtn.addEventListener('click', function() {
+    const newRow = document.createElement('div');
+    newRow.className = 'social-link-row row mb-2';
+    newRow.innerHTML = `
+      <div class="col-md-4">
+        <select class="form-control social-platform" name="social_platform[]">
+          <option value="">Select Platform</option>
+          <option value="personal">Personal Website</option>
+          <option value="github">GitHub</option>
+          <option value="linkedin">LinkedIn</option>
+          <option value="twitter">Twitter</option>
+          <option value="bilibili">Bilibili</option>
+          <option value="zhihu">Zhihu</option>
+          <option value="xiaohongshu">Xiaohongshu</option>
+        </select>
+      </div>
+      <div class="col-md-7">
+        <input type="url" class="form-control social-url" name="social_url[]" placeholder="https://...">
+      </div>
+      <div class="col-md-1 d-flex align-items-center">
+        <button type="button" class="btn btn-sm btn-outline-danger remove-social-btn">&times;</button>
+      </div>
+    `;
+    socialLinksContainer.appendChild(newRow);
+    
+    // Update remove buttons visibility
+    updateRemoveButtons();
+  });
+
+  // Remove social link row
+  socialLinksContainer.addEventListener('click', function(e) {
+    if (e.target.classList.contains('remove-social-btn')) {
+      e.target.closest('.social-link-row').remove();
+      updateRemoveButtons();
+    }
+  });
+
+  function updateRemoveButtons() {
+    const rows = socialLinksContainer.querySelectorAll('.social-link-row');
+    rows.forEach((row, index) => {
+      const removeBtn = row.querySelector('.remove-social-btn');
+      if (rows.length > 1) {
+        removeBtn.style.display = 'block';
+      } else {
+        removeBtn.style.display = 'none';
+      }
+    });
+  }
+
+  // Form submission
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    setLoading(true);
+    alertContainer.innerHTML = '';
+
+    try {
+      // Upload photo first if provided
+      if (photoInput.files[0]) {
+        const formData = new FormData();
+        formData.append('file', photoInput.files[0]);
+        
+        const uploadResponse = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData
+        });
+        
+        const uploadResult = await uploadResponse.json();
+        if (!uploadResult.success) {
+          throw new Error(uploadResult.error || 'Failed to upload photo');
+        }
+        uploadedPhotoUrl = uploadResult.url;
+      }
+
+      // Collect social links
+      const platforms = document.querySelectorAll('.social-platform');
+      const urls = document.querySelectorAll('.social-url');
+      const socialLinks = [];
+      
+      platforms.forEach((platform, index) => {
+        if (platform.value && urls[index].value) {
+          socialLinks.push({
+            platform: platform.value,
+            url: urls[index].value,
+            icon: getPlatformIcon(platform.value)
+          });
+        }
+      });
+
+      // Prepare member data
+      const memberData = {
+        name: document.getElementById('name').value.trim(),
+        name_cn: document.getElementById('nameCn').value.trim() || null,
+        role: document.getElementById('role').value.trim(),
+        category: document.getElementById('category').value,
+        website: document.getElementById('website').value.trim() || null,
+        photo_url: uploadedPhotoUrl,
+        social_links: socialLinks
+      };
+
+      // Submit registration
+      const response = await fetch('/api/members', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(memberData)
+      });
+
+      const result = await response.json();
+      
+      if (result.success) {
+        showAlert('Registration submitted successfully! Your profile will be visible after approval.', 'success');
+        form.reset();
+        previewImg.src = 'images/team/default-avatar.png';
+        uploadedPhotoUrl = null;
+      } else {
+        throw new Error(result.error || 'Failed to submit registration');
+      }
+
+    } catch (error) {
+      console.error('Registration error:', error);
+      showAlert(error.message || 'An error occurred. Please try again.', 'danger');
+    } finally {
+      setLoading(false);
+    }
+  });
+
+  function setLoading(loading) {
+    submitBtn.disabled = loading;
+    if (loading) {
+      submitText.textContent = 'Submitting...';
+      submitSpinner.classList.remove('d-none');
+    } else {
+      submitText.textContent = 'Submit Registration';
+      submitSpinner.classList.add('d-none');
+    }
+  }
+
+  function showAlert(message, type) {
+    alertContainer.innerHTML = `
+      <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+        ${message}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    `;
+  }
+
+  function getPlatformIcon(platform) {
+    const icons = {
+      'personal': 'images/social/Personal.png',
+      'github': 'images/social/github.png',
+      'linkedin': 'images/social/linkedin.png',
+      'twitter': 'images/social/twitter.png',
+      'bilibili': 'images/social/bilibili.png',
+      'zhihu': 'images/social/zhihu.png',
+      'xiaohongshu': 'images/social/xiaohongshu.png'
+    };
+    return icons[platform] || 'images/social/Personal.png';
+  }
+});
+</script>
+
+@@include('blocks/footer.htm')
+
+@@include('footer.htm')
