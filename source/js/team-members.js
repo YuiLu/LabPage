@@ -169,15 +169,16 @@
     }
 
     const { groups, sortedCategories } = groupByCategory(members);
+    const categoriesToRender = sortedCategories.filter(category => category !== 'alumni');
     
     let html = '';
     let isFirstGroup = true;
 
-    sortedCategories.forEach(category => {
+    categoriesToRender.forEach(category => {
       const categoryMembers = groups[category];
       
       // Don't add divider before first group (faculty)
-      if (!isFirstGroup && category !== 'alumni') {
+      if (!isFirstGroup) {
         html += createDivider();
       }
       isFirstGroup = false;
