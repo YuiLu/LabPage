@@ -1,5 +1,22 @@
 const { sql } = require('@vercel/postgres');
 
+function getPostgresDebugInfo() {
+  const rawUrl = process.env.POSTGRES_URL;
+  if (!rawUrl) return { postgresUrlPresent: false };
+
+  try {
+    const parsed = new URL(rawUrl);
+    return {
+      postgresUrlPresent: true,
+      postgresUrlScheme: parsed.protocol.replace(':', ''),
+      postgresUrlHost: parsed.host
+    };
+  } catch {
+    // In case POSTGRES_URL isn't a valid URL string
+    return { postgresUrlPresent: true, postgresUrlScheme: 'unparseable' };
+  }
+}
+
 // CORS headers helper
 function setCorsHeaders(res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -15,6 +32,13 @@ module.exports = async function handler(req, res) {
     return res.status(200).end();
   }
 
+  if (!process.env.POSTGRES_URL) {
+    return res.status(500).json({
+      success: false,
+      error: 'Database is not configured for this deployment (missing POSTGRES_URL). Please ensure Vercel Postgres is connected and its environment variables are available in the Production environment, then redeploy.'
+    });
+  }
+
   try {
     if (req.method === 'GET') {
       // Get all approved team members
@@ -25,12 +49,6 @@ module.exports = async function handler(req, res) {
         ORDER BY display_order ASC, created_at ASC
       `;
       
-        if (!process.env.POSTGRES_URL) {
-          return res.status(500).json({
-            success: false,
-            error: 'Database is not configured for this deployment (missing POSTGRES_URL). Please ensure Vercel Postgres is connected and its environment variables are available in the Production environment, then redeploy.'
-          });
-        }
       return res.status(200).json({ success: true, members: rows });
     }
 
@@ -77,7 +95,8 @@ module.exports = async function handler(req, res) {
     console.error('Database error:', error);
     return res.status(500).json({ 
       success: false, 
-      error: 'Internal server error: ' + error.message 
+      error: 'Internal server error: ' + error.message,
+      debug: getPostgresDebugInfo()
     });
   }
 };

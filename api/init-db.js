@@ -1,5 +1,21 @@
 const { sql } = require('@vercel/postgres');
 
+function getPostgresDebugInfo() {
+  const rawUrl = process.env.POSTGRES_URL;
+  if (!rawUrl) return { postgresUrlPresent: false };
+
+  try {
+    const parsed = new URL(rawUrl);
+    return {
+      postgresUrlPresent: true,
+      postgresUrlScheme: parsed.protocol.replace(':', ''),
+      postgresUrlHost: parsed.host
+    };
+  } catch {
+    return { postgresUrlPresent: true, postgresUrlScheme: 'unparseable' };
+  }
+}
+
 // CORS headers helper
 function setCorsHeaders(res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -59,7 +75,8 @@ module.exports = async function handler(req, res) {
     console.error('Database initialization error:', error);
     return res.status(500).json({ 
       success: false, 
-      error: 'Failed to initialize database: ' + error.message
+      error: 'Failed to initialize database: ' + error.message,
+      debug: getPostgresDebugInfo()
     });
   }
 };
