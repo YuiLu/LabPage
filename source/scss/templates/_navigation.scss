@@ -39,6 +39,18 @@
         color: $primary-color !important;
       }
     }
+
+    // Register button - highlight on hover
+    a.nav-register {
+      border-radius: 4px;
+      transition: all 0.3s ease;
+
+      &:hover,
+      &:focus {
+        background: $primary-color !important;
+        color: #fff !important;
+      }
+    }
   }
 }
 

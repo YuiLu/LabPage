@@ -246,13 +246,10 @@ a:hover {
   letter-spacing: 1px;
   padding: 10px 35px;
   text-transform: uppercase;
-  border: 1px solid transparent;
-  transition: all 0.3s ease;
 }
 .btn-main:hover {
-  background: transparent;
-  border-color: #57cbcc;
-  color: #57cbcc;
+  background: rgb(44.0136986301, 144.1232876712, 144.9863013699);
+  color: #fff;
 }
 
 .mt-20 {
@@ -534,6 +531,14 @@ a:hover {
   background: transparent;
   color: #57cbcc !important;
 }
+.navigation .navigation-menu a.nav-register {
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+.navigation .navigation-menu a.nav-register:hover, .navigation .navigation-menu a.nav-register:focus {
+  background: #57cbcc !important;
+  color: #fff !important;
+}
 
 .navbar-toggle {
   border: 1px solid #fff;
@@ -748,11 +753,11 @@ a:hover {
     padding: 40px 15px;
   }
 }
-.about-2 .content-block .media .pull-left {
-  padding-right: 15px;
-}
 .about-2 .content-block .media {
   margin-top: 25px;
+}
+.about-2 .content-block .media .pull-left {
+  padding-right: 15px;
 }
 .about-2 .content-block .media i {
   font-size: 30px;
