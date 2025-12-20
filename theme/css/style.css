@@ -246,10 +246,13 @@ a:hover {
   letter-spacing: 1px;
   padding: 10px 35px;
   text-transform: uppercase;
+  border: 1px solid transparent;
+  transition: all 0.3s ease;
 }
 .btn-main:hover {
-  background: rgb(44.0136986301, 144.1232876712, 144.9863013699);
-  color: #fff;
+  background: transparent;
+  border-color: #57cbcc;
+  color: #57cbcc;
 }
 
 .mt-20 {
