@@ -25,6 +25,12 @@ module.exports = async function handler(req, res) {
         ORDER BY display_order ASC, created_at ASC
       `;
       
+        if (!process.env.POSTGRES_URL) {
+          return res.status(500).json({
+            success: false,
+            error: 'Database is not configured for this deployment (missing POSTGRES_URL). Please ensure Vercel Postgres is connected and its environment variables are available in the Production environment, then redeploy.'
+          });
+        }
       return res.status(200).json({ success: true, members: rows });
     }
 

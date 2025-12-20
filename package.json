@@ -4,6 +4,9 @@
   "description": "meghna free blog template",
   "author": "Themefisher",
   "license": "MIT",
+  "engines": {
+    "node": "20.x"
+  },
   "scripts": {
     "dev": "gulp",
     "build": "gulp build",

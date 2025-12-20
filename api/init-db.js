@@ -19,6 +19,13 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  if (!process.env.POSTGRES_URL) {
+    return res.status(500).json({
+      success: false,
+      error: 'Database is not configured for this deployment (missing POSTGRES_URL). Please ensure Vercel Postgres is connected and its environment variables are available in the Production environment, then redeploy.'
+    });
+  }
+
   try {
     // Create the team_members table if it doesn't exist
     await sql`
@@ -52,7 +59,7 @@ module.exports = async function handler(req, res) {
     console.error('Database initialization error:', error);
     return res.status(500).json({ 
       success: false, 
-      error: 'Failed to initialize database: ' + error.message 
+      error: 'Failed to initialize database: ' + error.message
     });
   }
 };
