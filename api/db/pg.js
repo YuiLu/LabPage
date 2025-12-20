@@ -30,12 +30,29 @@ function getPool() {
     throw new Error('Database is not configured (missing POSTGRES_URL/DATABASE_URL).');
   }
 
-  // Supabase requires SSL. In serverless, keep a small pool.
-  pool = new Pool({
-    connectionString,
-    ssl: { rejectUnauthorized: false },
-    max: 5
-  });
+  let poolConfig;
+  try {
+    const parsed = new URL(connectionString);
+    poolConfig = {
+      host: parsed.hostname,
+      port: parsed.port ? Number(parsed.port) : 5432,
+      user: decodeURIComponent(parsed.username || ''),
+      password: decodeURIComponent(parsed.password || ''),
+      database: (parsed.pathname || '').replace(/^\//, '') || 'postgres',
+      // Supabase requires SSL; disable cert verification to avoid CA-chain issues in serverless.
+      ssl: { rejectUnauthorized: false },
+      max: 5
+    };
+  } catch {
+    // Fallback: use raw string, but still force SSL.
+    poolConfig = {
+      connectionString,
+      ssl: { rejectUnauthorized: false },
+      max: 5
+    };
+  }
+
+  pool = new Pool(poolConfig);
 
   return pool;
 }
