@@ -1,7 +1,16 @@
+function getDatabaseUrl() {
+  return process.env.POSTGRES_URL || process.env.DATABASE_URL || process.env.POSTGRES_URL_NON_POOLING;
+}
+
+// @vercel/postgres expects POSTGRES_URL; Marketplace providers often expose DATABASE_URL.
+if (!process.env.POSTGRES_URL && getDatabaseUrl()) {
+  process.env.POSTGRES_URL = getDatabaseUrl();
+}
+
 const { sql } = require('@vercel/postgres');
 
 function getPostgresDebugInfo() {
-  const rawUrl = process.env.POSTGRES_URL;
+  const rawUrl = getDatabaseUrl();
   if (!rawUrl) return { postgresUrlPresent: false };
 
   try {
@@ -38,10 +47,10 @@ module.exports = async function handler(req, res) {
     return res.status(200).end();
   }
 
-  if (!process.env.POSTGRES_URL) {
+  if (!getDatabaseUrl()) {
     return res.status(500).json({
       success: false,
-      error: 'Database is not configured for this deployment (missing POSTGRES_URL). Please ensure Vercel Postgres is connected and its environment variables are available in the Production environment, then redeploy.'
+      error: 'Database is not configured for this deployment (missing POSTGRES_URL/DATABASE_URL). Please connect a Postgres provider in Vercel (Marketplace → Neon recommended) and ensure its env vars are available in the Production environment, then redeploy.'
     });
   }
 
