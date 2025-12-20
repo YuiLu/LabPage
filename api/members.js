@@ -1,36 +1,4 @@
-function getDatabaseUrl() {
-  return process.env.POSTGRES_URL || process.env.DATABASE_URL || process.env.POSTGRES_URL_NON_POOLING;
-}
-
-// @vercel/postgres expects POSTGRES_URL; Marketplace providers often expose DATABASE_URL.
-if (!process.env.POSTGRES_URL && getDatabaseUrl()) {
-  process.env.POSTGRES_URL = getDatabaseUrl();
-}
-
-const { sql } = require('@vercel/postgres');
-
-function getPostgresDebugInfo() {
-  const rawUrl = getDatabaseUrl();
-  if (!rawUrl) return { postgresUrlPresent: false };
-
-  try {
-    const parsed = new URL(rawUrl);
-    return {
-      postgresUrlPresent: true,
-      postgresUrlScheme: parsed.protocol.replace(':', ''),
-      postgresUrlHost: parsed.host
-    };
-  } catch {
-    // In case POSTGRES_URL isn't a valid URL string
-    return { postgresUrlPresent: true, postgresUrlScheme: 'unparseable' };
-  }
-}
-
-function isLikelyNonVercelPostgresHost(host) {
-  if (!host) return false;
-  // Vercel Postgres is Neon-backed (commonly *.neon.tech). Supabase poolers are *.supabase.com.
-  return host.includes('supabase.com');
-}
+const { getDatabaseUrl, getDbDebugInfo, query } = require('./db/pg');
 
 // CORS headers helper
 function setCorsHeaders(res) {
@@ -50,28 +18,22 @@ module.exports = async function handler(req, res) {
   if (!getDatabaseUrl()) {
     return res.status(500).json({
       success: false,
-      error: 'Database is not configured for this deployment (missing POSTGRES_URL/DATABASE_URL). Please connect a Postgres provider in Vercel (Marketplace → Neon recommended) and ensure its env vars are available in the Production environment, then redeploy.'
+      error: 'Database is not configured for this deployment (missing POSTGRES_URL/DATABASE_URL). Please set it to your Supabase Postgres connection string.'
     });
   }
-
-  const dbDebug = getPostgresDebugInfo();
-  if (dbDebug.postgresUrlHost && isLikelyNonVercelPostgresHost(dbDebug.postgresUrlHost)) {
-    return res.status(500).json({
-      success: false,
-      error: 'POSTGRES_URL points to a Supabase host, but this project uses @vercel/postgres which is intended for Vercel Postgres. Fix by removing/renaming the Supabase POSTGRES_URL env var in Vercel and connecting Vercel Postgres to populate the correct POSTGRES_* variables (then redeploy). If you want to use Supabase Postgres, switch the code to use the pg driver instead of @vercel/postgres.',
-      debug: dbDebug
-    });
-  }
+  const dbDebug = getDbDebugInfo();
 
   try {
     if (req.method === 'GET') {
       // Get all approved team members
-      const { rows } = await sql`
+      const { rows } = await query(
+        `
         SELECT id, name, name_cn, role, category, photo_url, website, social_links, display_order
-        FROM team_members 
-        WHERE is_approved = true 
+        FROM team_members
+        WHERE is_approved = true
         ORDER BY display_order ASC, created_at ASC
-      `;
+        `
+      );
       
       return res.status(200).json({ success: true, members: rows });
     }
@@ -99,12 +61,22 @@ module.exports = async function handler(req, res) {
 
       // Insert new member (not approved by default)
       const socialLinksJson = JSON.stringify(social_links || []);
-      
-      const result = await sql`
+      const result = await query(
+        `
         INSERT INTO team_members (name, name_cn, role, category, photo_url, website, social_links, is_approved)
-        VALUES (${name}, ${name_cn || null}, ${role}, ${category}, ${photo_url || null}, ${website || null}, ${socialLinksJson}::jsonb, false)
+        VALUES ($1, $2, $3, $4, $5, $6, $7::jsonb, false)
         RETURNING id
-      `;
+        `,
+        [
+          name,
+          name_cn || null,
+          role,
+          category,
+          photo_url || null,
+          website || null,
+          socialLinksJson
+        ]
+      );
 
       return res.status(201).json({ 
         success: true, 

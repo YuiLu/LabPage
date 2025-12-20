@@ -1,33 +1,4 @@
-function getDatabaseUrl() {
-  return process.env.POSTGRES_URL || process.env.DATABASE_URL || process.env.POSTGRES_URL_NON_POOLING;
-}
-
-if (!process.env.POSTGRES_URL && getDatabaseUrl()) {
-  process.env.POSTGRES_URL = getDatabaseUrl();
-}
-
-const { sql } = require('@vercel/postgres');
-
-function getPostgresDebugInfo() {
-  const rawUrl = getDatabaseUrl();
-  if (!rawUrl) return { postgresUrlPresent: false };
-
-  try {
-    const parsed = new URL(rawUrl);
-    return {
-      postgresUrlPresent: true,
-      postgresUrlScheme: parsed.protocol.replace(':', ''),
-      postgresUrlHost: parsed.host
-    };
-  } catch {
-    return { postgresUrlPresent: true, postgresUrlScheme: 'unparseable' };
-  }
-}
-
-function isLikelyNonVercelPostgresHost(host) {
-  if (!host) return false;
-  return host.includes('supabase.com');
-}
+const { getDatabaseUrl, getDbDebugInfo, query } = require('./db/pg');
 
 // Seed data - all existing team members
 const seedData = {
@@ -364,18 +335,11 @@ module.exports = async function handler(req, res) {
   if (!getDatabaseUrl()) {
     return res.status(500).json({
       success: false,
-      error: 'Database is not configured for this deployment (missing POSTGRES_URL/DATABASE_URL). Please connect a Postgres provider in Vercel (Marketplace → Neon recommended) and ensure its env vars are available in the Production environment, then redeploy.'
+      error: 'Database is not configured for this deployment (missing POSTGRES_URL/DATABASE_URL). Please set it to your Supabase Postgres connection string.'
     });
   }
 
-  const dbDebug = getPostgresDebugInfo();
-  if (dbDebug.postgresUrlHost && isLikelyNonVercelPostgresHost(dbDebug.postgresUrlHost)) {
-    return res.status(500).json({
-      success: false,
-      error: 'POSTGRES_URL points to a Supabase host, but this endpoint uses @vercel/postgres (Vercel Postgres). Fix by removing/renaming the Supabase POSTGRES_URL env var in Vercel and connecting Vercel Postgres to populate the correct POSTGRES_* variables (then redeploy).',
-      debug: dbDebug
-    });
-  }
+  const dbDebug = getDbDebugInfo();
 
   try {
     let insertedCount = 0;
@@ -384,26 +348,29 @@ module.exports = async function handler(req, res) {
       const socialLinksJson = JSON.stringify(member.social_links || []);
       
       // Check if member already exists (by name and category)
-      const existing = await sql`
-        SELECT id FROM team_members 
-        WHERE name = ${member.name} AND category = ${member.category}
-      `;
+      const existing = await query(
+        'SELECT id FROM team_members WHERE name = $1 AND category = $2',
+        [member.name, member.category]
+      );
       
       if (existing.rows.length === 0) {
-        await sql`
+        await query(
+          `
           INSERT INTO team_members (name, name_cn, role, category, photo_url, website, social_links, display_order, is_approved)
-          VALUES (
-            ${member.name}, 
-            ${member.name_cn || null}, 
-            ${member.role}, 
-            ${member.category}, 
-            ${member.photo_url || null}, 
-            ${member.website || null}, 
-            ${socialLinksJson}::jsonb, 
-            ${member.display_order || 0},
-            ${member.is_approved !== false}
-          )
-        `;
+          VALUES ($1, $2, $3, $4, $5, $6, $7::jsonb, $8, $9)
+          `,
+          [
+            member.name,
+            member.name_cn || null,
+            member.role,
+            member.category,
+            member.photo_url || null,
+            member.website || null,
+            socialLinksJson,
+            member.display_order || 0,
+            member.is_approved !== false
+          ]
+        );
         insertedCount++;
       }
     }

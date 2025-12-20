@@ -1,33 +1,4 @@
-function getDatabaseUrl() {
-  return process.env.POSTGRES_URL || process.env.DATABASE_URL || process.env.POSTGRES_URL_NON_POOLING;
-}
-
-if (!process.env.POSTGRES_URL && getDatabaseUrl()) {
-  process.env.POSTGRES_URL = getDatabaseUrl();
-}
-
-const { sql } = require('@vercel/postgres');
-
-function getPostgresDebugInfo() {
-  const rawUrl = getDatabaseUrl();
-  if (!rawUrl) return { postgresUrlPresent: false };
-
-  try {
-    const parsed = new URL(rawUrl);
-    return {
-      postgresUrlPresent: true,
-      postgresUrlScheme: parsed.protocol.replace(':', ''),
-      postgresUrlHost: parsed.host
-    };
-  } catch {
-    return { postgresUrlPresent: true, postgresUrlScheme: 'unparseable' };
-  }
-}
-
-function isLikelyNonVercelPostgresHost(host) {
-  if (!host) return false;
-  return host.includes('supabase.com');
-}
+const { getDatabaseUrl, getDbDebugInfo, query } = require('./db/pg');
 
 // CORS headers helper
 function setCorsHeaders(res) {
@@ -51,22 +22,15 @@ module.exports = async function handler(req, res) {
   if (!getDatabaseUrl()) {
     return res.status(500).json({
       success: false,
-      error: 'Database is not configured for this deployment (missing POSTGRES_URL/DATABASE_URL). Please connect a Postgres provider in Vercel (Marketplace → Neon recommended) and ensure its env vars are available in the Production environment, then redeploy.'
+      error: 'Database is not configured for this deployment (missing POSTGRES_URL/DATABASE_URL). Please set it to your Supabase Postgres connection string.'
     });
   }
-
-  const dbDebug = getPostgresDebugInfo();
-  if (dbDebug.postgresUrlHost && isLikelyNonVercelPostgresHost(dbDebug.postgresUrlHost)) {
-    return res.status(500).json({
-      success: false,
-      error: 'POSTGRES_URL points to a Supabase host, but this endpoint uses @vercel/postgres (Vercel Postgres). Fix by removing/renaming the Supabase POSTGRES_URL env var in Vercel and connecting Vercel Postgres to populate the correct POSTGRES_* variables (then redeploy).',
-      debug: dbDebug
-    });
-  }
+  const dbDebug = getDbDebugInfo();
 
   try {
     // Create the team_members table if it doesn't exist
-    await sql`
+    await query(
+      `
       CREATE TABLE IF NOT EXISTS team_members (
         id SERIAL PRIMARY KEY,
         name VARCHAR(100) NOT NULL,
@@ -81,12 +45,13 @@ module.exports = async function handler(req, res) {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
-    `;
+      `
+    );
 
     // Create indexes
-    await sql`CREATE INDEX IF NOT EXISTS idx_team_members_category ON team_members(category)`;
-    await sql`CREATE INDEX IF NOT EXISTS idx_team_members_approved ON team_members(is_approved)`;
-    await sql`CREATE INDEX IF NOT EXISTS idx_team_members_order ON team_members(display_order)`;
+    await query('CREATE INDEX IF NOT EXISTS idx_team_members_category ON team_members(category)');
+    await query('CREATE INDEX IF NOT EXISTS idx_team_members_approved ON team_members(is_approved)');
+    await query('CREATE INDEX IF NOT EXISTS idx_team_members_order ON team_members(display_order)');
 
     return res.status(200).json({ 
       success: true, 
