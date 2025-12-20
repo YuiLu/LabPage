@@ -5,6 +5,10 @@ function setCorsHeaders(res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  // Ensure API responses are never cached (so Supabase edits show up immediately)
+  res.setHeader('Cache-Control', 'no-store, max-age=0');
+  res.setHeader('Pragma', 'no-cache');
 }
 
 module.exports = async function handler(req, res) {
@@ -59,12 +63,12 @@ module.exports = async function handler(req, res) {
         });
       }
 
-      // Insert new member (not approved by default)
+      // Insert new member (approved by default)
       const socialLinksJson = JSON.stringify(social_links || []);
       const result = await query(
         `
         INSERT INTO team_members (name, name_cn, role, category, photo_url, website, social_links, is_approved)
-        VALUES ($1, $2, $3, $4, $5, $6, $7::jsonb, false)
+        VALUES ($1, $2, $3, $4, $5, $6, $7::jsonb, true)
         RETURNING id
         `,
         [
@@ -80,7 +84,7 @@ module.exports = async function handler(req, res) {
 
       return res.status(201).json({ 
         success: true, 
-        message: 'Registration submitted successfully. Awaiting approval.',
+        message: 'Registration submitted successfully.',
         id: result.rows[0].id
       });
     }
