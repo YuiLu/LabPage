@@ -16,6 +16,11 @@ function getPostgresDebugInfo() {
   }
 }
 
+function isLikelyNonVercelPostgresHost(host) {
+  if (!host) return false;
+  return host.includes('supabase.com');
+}
+
 // CORS headers helper
 function setCorsHeaders(res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -39,6 +44,15 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({
       success: false,
       error: 'Database is not configured for this deployment (missing POSTGRES_URL). Please ensure Vercel Postgres is connected and its environment variables are available in the Production environment, then redeploy.'
+    });
+  }
+
+  const dbDebug = getPostgresDebugInfo();
+  if (dbDebug.postgresUrlHost && isLikelyNonVercelPostgresHost(dbDebug.postgresUrlHost)) {
+    return res.status(500).json({
+      success: false,
+      error: 'POSTGRES_URL points to a Supabase host, but this endpoint uses @vercel/postgres (Vercel Postgres). Fix by removing/renaming the Supabase POSTGRES_URL env var in Vercel and connecting Vercel Postgres to populate the correct POSTGRES_* variables (then redeploy).',
+      debug: dbDebug
     });
   }
 
@@ -76,7 +90,7 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ 
       success: false, 
       error: 'Failed to initialize database: ' + error.message,
-      debug: getPostgresDebugInfo()
+      debug: dbDebug
     });
   }
 };

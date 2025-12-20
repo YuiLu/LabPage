@@ -16,6 +16,11 @@ function getPostgresDebugInfo() {
   }
 }
 
+function isLikelyNonVercelPostgresHost(host) {
+  if (!host) return false;
+  return host.includes('supabase.com');
+}
+
 // Seed data - all existing team members
 const seedData = {
   "members": [
@@ -355,6 +360,15 @@ module.exports = async function handler(req, res) {
     });
   }
 
+  const dbDebug = getPostgresDebugInfo();
+  if (dbDebug.postgresUrlHost && isLikelyNonVercelPostgresHost(dbDebug.postgresUrlHost)) {
+    return res.status(500).json({
+      success: false,
+      error: 'POSTGRES_URL points to a Supabase host, but this endpoint uses @vercel/postgres (Vercel Postgres). Fix by removing/renaming the Supabase POSTGRES_URL env var in Vercel and connecting Vercel Postgres to populate the correct POSTGRES_* variables (then redeploy).',
+      debug: dbDebug
+    });
+  }
+
   try {
     let insertedCount = 0;
     
@@ -397,7 +411,7 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ 
       success: false, 
       error: 'Failed to seed database: ' + error.message,
-      debug: getPostgresDebugInfo()
+      debug: dbDebug
     });
   }
 };
