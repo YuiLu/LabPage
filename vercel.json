@@ -4,13 +4,13 @@
   "framework": null,
   "cleanUrls": true,
   "trailingSlash": false,
+  "github": {
+    "enabled": true
+  },
   "functions": {
     "api/*.js": {
       "runtime": "nodejs20.x"
     }
-  },
-  "github": {
-    "enabled": true
   },
   "rewrites": [
     { "source": "/api/:path*", "destination": "/api/:path*" }
