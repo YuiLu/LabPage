@@ -1,38 +1,32 @@
 # MAGIC Lab Database Setup Guide
 
-This guide explains how to set up the Vercel Postgres database for dynamic team member management.
+This guide explains how to set up a Supabase Postgres database for dynamic team member management.
 
 ## Prerequisites
 
-1. A Vercel account with Postgres storage enabled
-2. Access to the Vercel project dashboard
+1. A Supabase project (Postgres database)
+2. Access to the Vercel project dashboard (to set environment variables)
 
 ## Setup Steps
 
-### 1. Create a Vercel Postgres Database
+### 1. Create a Supabase Postgres Database
 
-1. Go to your Vercel project dashboard
-2. Navigate to **Storage** tab
-3. Click **Create Database** and select **Postgres**
-4. Choose a name for your database (e.g., `magic-lab-db`)
-5. Select your preferred region
-6. Click **Create**
+1. Go to your Supabase dashboard
+2. Create a new project (or use an existing one)
+3. In **Project Settings → Database**, copy the connection string
 
-### 2. Connect the Database to Your Project
+### 2. Configure Vercel Environment Variables
 
-After creating the database:
-1. Click on the database to open its settings
-2. Go to the **Getting Started** tab
-3. Copy the environment variables and add them to your Vercel project
+This project uses a serverless API on Vercel and connects directly to Supabase Postgres via the `pg` driver.
 
-The required environment variables are:
-- `POSTGRES_URL`
-- `POSTGRES_PRISMA_URL`
-- `POSTGRES_URL_NON_POOLING`
-- `POSTGRES_USER`
-- `POSTGRES_HOST`
-- `POSTGRES_PASSWORD`
-- `POSTGRES_DATABASE`
+In your Vercel Project → **Settings → Environment Variables**, set one of the following:
+- `POSTGRES_URL` (recommended in this project)
+  - Set it to your Supabase Postgres connection string
+- OR `DATABASE_URL`
+
+Important:
+- Apply it to the **Production** environment (and Preview if needed)
+- After changing env vars, **Redeploy** to make them take effect
 
 ### 3. (Optional) Create a Vercel Blob Store for Image Uploads
 
@@ -153,10 +147,21 @@ To use the dynamic version of the People section (loaded from database):
 
 New registrations have `is_approved = false` by default. To approve members, you'll need to directly update the database or create an admin interface.
 
-You can update approval status using Vercel's Data Browser:
-1. Go to your database in Vercel dashboard
-2. Click on **Data Browser**
-3. Find the member and update `is_approved` to `true`
+You can approve members using Supabase:
+1. Go to Supabase → **Table Editor**
+2. Open the `team_members` table
+3. Find the row and set `is_approved` to `true`
+
+Alternatively, run SQL in Supabase → **SQL Editor**:
+```sql
+UPDATE team_members
+SET is_approved = true
+WHERE id = 123;
+```
+
+Notes:
+- Approved members will show up on the website only when `is_approved = true`.
+- Ordering uses `display_order` first; if you want a specific position in the list, set `display_order` accordingly.
 
 ## Local Development
 
@@ -167,4 +172,4 @@ POSTGRES_URL=your_postgres_url
 BLOB_READ_WRITE_TOKEN=your_blob_token
 ```
 
-Note: The API endpoints will only work when deployed to Vercel, as they use Vercel's serverless infrastructure.
+Note: The API endpoints are designed for Vercel Serverless Functions.
