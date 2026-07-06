@@ -46,6 +46,55 @@
 		autoplaySpeed: 4000
 	});
 
+	function syncNewsHeight() {
+		var $gallery = $('#gallery-post');
+		var $newsBar = $('#news .news-bar');
+
+		if (!$gallery.length || !$newsBar.length) {
+			return;
+		}
+
+		var isDesktop = window.matchMedia('(min-width: 768px)').matches;
+		var $items = $newsBar.children('.news-item');
+
+		$items.removeClass('is-hidden');
+
+		if (!isDesktop) {
+			$newsBar.css({
+				height: '',
+				overflow: ''
+			});
+			return;
+		}
+
+		var availableHeight = Math.floor($gallery.outerHeight());
+		if (!availableHeight) {
+			return;
+		}
+
+		var usedHeight = 0;
+		$items.each(function () {
+			var $item = $(this);
+			var itemHeight = $item.outerHeight(true);
+
+			if (usedHeight + itemHeight > availableHeight) {
+				$item.addClass('is-hidden');
+				return;
+			}
+
+			usedHeight += itemHeight;
+		});
+
+		$newsBar.css({
+			height: availableHeight + 'px',
+			overflow: 'hidden'
+		});
+	}
+
+	$(window).on('load resize', function () {
+		window.requestAnimationFrame(syncNewsHeight);
+	});
+
 
 	/* ========================================================================= */
 	/*	Magnific popup

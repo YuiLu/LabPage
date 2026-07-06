@@ -1150,13 +1150,15 @@ div[lang=zh] {
 .news-bar .progress .progress-bar {
   background: #57cbcc;
 }
-.news-bar li:not(:last-child) {
-  margin-bottom: 25px;
-}
 
 .news-item {
   display: flex;
-  margin-bottom: 13px;
+  margin-bottom: 9px;
+  line-height: 1.45;
+}
+
+.news-item.is-hidden {
+  display: none;
 }
 
 .news-date {
