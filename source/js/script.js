@@ -86,6 +86,8 @@
 
 	$(window).on('load resize', function () {
 		window.requestAnimationFrame(syncNewsHeight);
+		window.setTimeout(syncNewsHeight, 150);
+		window.setTimeout(syncNewsHeight, 500);
 	});
 
 

@@ -1153,8 +1153,8 @@ div[lang=zh] {
 
 .news-item {
   display: flex;
-  margin-bottom: 9px;
-  line-height: 1.45;
+  margin-bottom: 12px;
+  line-height: 1.55;
 }
 
 .news-item.is-hidden {
@@ -1165,12 +1165,13 @@ div[lang=zh] {
   width: 120px;
   flex-shrink: 0;
   font-weight: 500;
-  font-size: 16px;
+  font-size: 17px;
 }
 
 .news-content {
   flex-grow: 1;
-  font-size: 16px;
+  font-size: 17px;
+  line-height: 1.55;
 }
 
 /* Gallery hover effect */
